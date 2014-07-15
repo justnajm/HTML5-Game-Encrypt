@@ -1,0 +1,51 @@
+<script language="javascript">
+
+function encrypt(val,pwd){ 
+
+	 var key = new Array();
+	 var ind = new Array();
+
+	 var enc = "";
+	 var j = 0;
+	 var a = 0;
+	 var k = 0;
+	 var tmp = 0;
+	 
+	 for(var i = 0; i < 256; i++){
+		key[i] = pwd.substr((i % pwd.length),1).charCodeAt(0);
+		ind[i] = i;
+	 }
+
+	 j = 0;
+	 for(var i = 0; i < 256; i++) {
+		j = (j + ind[i] + key[i]) % 256;
+		tmp = ind[i];
+		ind[i] = ind[j];
+		ind[j] = tmp;
+	 }
+	 
+	 j = 0;
+	 a = 0;
+	 var hint = "";
+    for(var i = 0; i < val.length; i++) {
+       a = (a + 1) % 256;
+       j = (j + ind[a]) % 256;
+       tmp = ind[a];
+       ind[a] = ind[j];
+       ind[j] = tmp;
+       k = ind[(ind[a] + ind[j]) % 256];
+       ord = val.substr(i,1).charCodeAt(0);
+	   code = ord ^ k;
+	   hint += ("" + code).length;
+       enc += "" + code;
+    }
+	
+	return hint.length + "" + hint + "" + enc;
+}
+// sending score: 9000 to server
+var code = encrypt('9000','secret');
+// optional if you want to check the encryption agains value at server side
+code += '9000';
+// in real situation you won't be passing password
+document.location = 'index.php?code=' + code + '&pwd=secret';
+</script>
